@@ -23,11 +23,14 @@ AboutWindow::AboutWindow() {
       " Abajo: S\n"
       " Derecha: D\n"
       " -   Comer puntos: Al comer puntos, suma puntos.\n"
-      " -   Descomponer a los robots: Cuando alguno de los experimentos come un\n"
+      " -   Descomponer a los robots: Cuando alguno de los experimentos come "
+      "un\n"
       " punto grande, cambia de color y puede descomponer a los robots. Los\n"
-      " robots se vuelven azules y tienen un patrón de movimiento distinto. Si\n"
+      " robots se vuelven azules y tienen un patrón de movimiento distinto. "
+      "Si\n"
       " B-255 o N-011 toca a un robot normal, pierde una vida.\n"
-      " -   Vidas: los experimentos tienen un número limitado de vidas. Al ser\n"
+      " -   Vidas: los experimentos tienen un número limitado de vidas. Al "
+      "ser\n"
       " capturado por un robot, pierde una vida. Si se quedan sin vidas, el\n"
       " juego termina.");
   text.setCharacterSize(20);

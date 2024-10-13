@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "../MainMenu/about_window.cpp" 
 
 Game::Game() {
   initSounds();
@@ -7,7 +8,9 @@ Game::Game() {
 
   initMap();
   initWindow();
+  initPauseText();  // Inicializar el texto de pausa
 }
+
 Game::~Game() {
   // Play "Thank you" sound, and wait for it to finish before proceeding.
   ty_sound->play();
@@ -52,12 +55,33 @@ void Game::pollEvents() {
     if (game_over && event.type == sf::Event::KeyPressed) {
       window->close();
     }
+
+    // Toggle pause state when Escape is pressed
+    if (event.type == sf::Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Escape) {
+      is_paused = !is_paused;
+    }
+
+    if (is_paused && event.type == sf::Event::KeyPressed) {
+      if (event.key.code == sf::Keyboard::Up) {
+        selected_option = (selected_option - 1 + 2) % 2;  // Mover hacia arriba
+      } else if (event.key.code == sf::Keyboard::Down) {
+        selected_option = (selected_option + 1) % 2;  // Mover hacia abajo
+      } else if (event.key.code == sf::Keyboard::Enter) {
+        if (selected_option == 0) {
+          is_paused = false;  // Reanudar el juego
+        } else if (selected_option == 1) {
+          AboutWindow aboutWindow;
+          aboutWindow.show();  // Mostrar ventana "About"
+        }
+      }
+    }
   }
 }
 
 void Game::update() {
   pollEvents();
-  if (!game_over) {
+  if (!is_paused && !game_over) {
     // Call the update method on every map tile.
     for (vec2pGT &vec2 : map) {
       for (vec1pGT &vec1 : vec2) {
@@ -70,14 +94,13 @@ void Game::update() {
     }
 
     if (Food::counter <= 0) game_over = true;
-    ;
 
-  } else {
+  } else if (game_over) {
     sf::sleep(sf::milliseconds(200));
   }
 }
 
-void Game::render() const {
+   void Game::render() {
   // Clear the old frame from the window.
   window->clear(background_color);
 
@@ -91,11 +114,28 @@ void Game::render() const {
     }
   }
 
-  if (game_over) game_over_title->render(window);
+  if (game_over) {
+    game_over_title->render(window);
+  } else if (is_paused) {
+    window->draw(pause_overlay);  // Dibujar el rectángulo de opacidad
+    window->draw(pause_text);     // Render the pause text
+
+    if (selected_option == 0) {
+      resume_text.setFillColor(sf::Color(194, 0, 194));  // Resaltar opción seleccionada
+      about_text.setFillColor(sf::Color::White);
+    } else if (selected_option == 1) {
+      resume_text.setFillColor(sf::Color::White);
+      about_text.setFillColor(sf::Color(194, 0, 194));  // Resaltar opción seleccionada
+    }
+
+    window->draw(resume_text);  // Render the resume text
+    window->draw(about_text);   // Render the about text
+  }
 
   // Display the newly rendered frame onto the window.
   window->display();
 }
+   
 
 bool Game::isRunning() const {
   if (window == nullptr) return false;
@@ -133,8 +173,41 @@ void Game::initWindow() {
   window->setVisible(true);
 }
 
+void Game::initPauseText() {
+  selected_option = 0;
+
+  pause_text.setFont(*Config::getInstance()->font);
+  pause_text.setString("Paused");
+  pause_text.setCharacterSize(50);
+  pause_text.setFillColor(sf::Color::White);
+  pause_text.setPosition(
+      window->getSize().x / 2 - pause_text.getGlobalBounds().width / 2,
+      window->getSize().y / 2 - pause_text.getGlobalBounds().height / 2);
+
+  resume_text.setFont(*Config::getInstance()->font);
+  resume_text.setString("Press R to Resume");
+  resume_text.setCharacterSize(30);
+  resume_text.setFillColor(sf::Color::White);
+  resume_text.setPosition(
+      window->getSize().x / 2 - resume_text.getGlobalBounds().width / 2,
+      window->getSize().y / 2 + pause_text.getGlobalBounds().height);
+
+  about_text.setFont(*Config::getInstance()->font);
+  about_text.setString("About");
+  about_text.setCharacterSize(30);
+  about_text.setFillColor(sf::Color::White);
+  about_text.setPosition(
+      window->getSize().x / 2 - about_text.getGlobalBounds().width / 2,
+      (window->getSize().y / 2 + pause_text.getGlobalBounds().height) + 45);
+
+  // Inicializar el rectángulo de opacidad
+  pause_overlay.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
+  pause_overlay.setFillColor(sf::Color(0, 0, 0, 200));  // Color negro con 150 de opacidad
+}
+
 vector<vector<char>> Game::readMap() {
-  std::ifstream file(pac::getResourcePath(Config::getInstance()->selected_map), std::ios::binary);
+  std::ifstream file(pac::getResourcePath(Config::getInstance()->selected_map),
+                     std::ios::binary);
   std::string line = "";
   unsigned long int line_count = 0, line_length = 0;
   vector<vector<char>> char_map = {};

@@ -34,11 +34,14 @@ void GameTile::loadTextures() {
 }
 
 void GameTile::updateSprite() {
-  // Load the texture from the animation vector
+  if (textures.empty()) {
+    // Handle the error, e.g., by logging or setting a default texture
+    return;
+  }
+
   const int animation_index = (frame_counter / animation_fps) % textures.size();
   sprite.setTexture(*(textures[animation_index]));
 
-  // Frame counter only goes from 0 to WINDOW_FRAMERATE - 1
   frame_counter = (frame_counter + 1) % 60;
 
   // Update on-screen position

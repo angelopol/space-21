@@ -1,5 +1,5 @@
 #include "main_menu.hpp"
-#include "about_window.cpp"
+#include "about_window.hpp"
 
 MainMenu::MainMenu() {
   selection_index = 0;
