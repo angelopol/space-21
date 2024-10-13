@@ -26,7 +26,7 @@ void MainMenu::pollEvents() {
   sf::Event event;
   while (window->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
-      window->close();
+      exit(1);
     }
 
     if (event.type == sf::Event::KeyPressed) {
@@ -98,12 +98,20 @@ void MainMenu::initWindow() {
   window->setFramerateLimit(config->window_framerate);
   window->setVerticalSyncEnabled(true);
 
+  // Load and set the window icon.
+  sf::Image icon;
+  if (!icon.loadFromFile("res/icons/icono.png")) {
+    std::cerr << "Error loading window icon" << std::endl;
+  } else {
+    window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+  }
+
   // Show the window.
   window->setVisible(true);
 }
 
 void MainMenu::initText() {
-  title = new WindowTitle(Config::getInstance()->window_title, {260.f, 150.f});
+  title = new WindowTitle(Config::getInstance()->window_title, {260.f, 135.f});
   options[0] = new MenuEntry("Start Singleplayer", {200.f, 260.f});
   options[1] = new MenuEntry("Start Multiplayer", {200.f, 300.f});
   options[2] = new MenuEntry("About", {200.f, 340.f});

@@ -12,7 +12,7 @@ WindowTitle::WindowTitle(const std::string &_content,
 
   text.setFont(font);
   text.setString(_content);
-  text.setCharacterSize(40);
+  text.setCharacterSize(50);
   text.setLetterSpacing(1.25);
   text.setFillColor(sf::Color(64,161,7));
   text.setPosition(_position);

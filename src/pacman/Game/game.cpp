@@ -121,6 +121,14 @@ void Game::initWindow() {
 
   initTitles();
 
+  // Load and set the window icon.
+  sf::Image icon;
+  if (!icon.loadFromFile("res/icons/icono.png")) {
+    std::cerr << "Error loading window icon" << std::endl;
+  } else {
+    window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+  }
+
   // Show the window.
   window->setVisible(true);
 }
