@@ -1,6 +1,5 @@
 #include "main_menu.hpp"
 #include "about_window.hpp"
-#include "../Game/game.hpp"
 
 MainMenu::MainMenu() {
   selection_index = 0;
@@ -44,22 +43,16 @@ void MainMenu::pollEvents() {
         }
 
         switch (selection_index) {
-          case 0: {
-            Config *config = Config::getInstance();
-            config->selected_map = config->maps["single-player"];
+          case 0:
+            Config::getInstance()->selected_map =
+                Config::getInstance()->maps["single-player"];
             window->close();
-            Game game;
-            game.run();
             break;
-          }
-          case 1: {
-            Config *config = Config::getInstance();
-            config->selected_map = config->maps["dual-player"];
+          case 1:
+            Config::getInstance()->selected_map =
+                Config::getInstance()->maps["dual-player"];
             window->close();
-            Game game;
-            game.run();
             break;
-          }
           case 2: {
             AboutWindow aboutWindow;
             aboutWindow.show();
