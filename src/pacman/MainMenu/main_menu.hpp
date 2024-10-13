@@ -1,7 +1,6 @@
 #ifndef MAIN_MENU_HPP
 #define MAIN_MENU_HPP
 
-#include "../Config/config.hpp"
 #include "../WindowTitle/window_title.hpp"
 #include "MenuAnimation/menu_animation.hpp"
 #include "MenuEntry/menu_entry.hpp"

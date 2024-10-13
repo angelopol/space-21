@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "../MainMenu/main_menu.hpp"
 #include "../MainMenu/about_window.cpp" 
 
 Game::Game() {
@@ -8,7 +9,7 @@ Game::Game() {
 
   initMap();
   initWindow();
-  initPauseText();  // Inicializar el texto de pausa
+  initPauseText();
 }
 
 Game::~Game() {
@@ -64,15 +65,17 @@ void Game::pollEvents() {
 
     if (is_paused && event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Up) {
-        selected_option = (selected_option - 1 + 2) % 2;  // Mover hacia arriba
+        selected_option = (selected_option - 1 + 3) % 3;  // Mover hacia arriba
       } else if (event.key.code == sf::Keyboard::Down) {
-        selected_option = (selected_option + 1) % 2;  // Mover hacia abajo
+        selected_option = (selected_option + 1) % 3;  // Mover hacia abajo
       } else if (event.key.code == sf::Keyboard::Enter) {
         if (selected_option == 0) {
           is_paused = false;  // Reanudar el juego
         } else if (selected_option == 1) {
           AboutWindow aboutWindow;
           aboutWindow.show();  // Mostrar ventana "About"
+        } else if (selected_option == 2) {
+        window->close();
         }
       }
     }
@@ -100,7 +103,7 @@ void Game::update() {
   }
 }
 
-   void Game::render() {
+void Game::render() {
   // Clear the old frame from the window.
   window->clear(background_color);
 
@@ -121,20 +124,31 @@ void Game::update() {
     window->draw(pause_text);     // Render the pause text
 
     if (selected_option == 0) {
-      resume_text.setFillColor(sf::Color(194, 0, 194));  // Resaltar opción seleccionada
+      resume_text.setFillColor(
+          sf::Color(194, 0, 194));  // Resaltar opción seleccionada
       about_text.setFillColor(sf::Color::White);
+      main_menu_text.setFillColor(sf::Color::White);
     } else if (selected_option == 1) {
       resume_text.setFillColor(sf::Color::White);
-      about_text.setFillColor(sf::Color(194, 0, 194));  // Resaltar opción seleccionada
+      about_text.setFillColor(
+          sf::Color(194, 0, 194));  // Resaltar opción seleccionada
+      main_menu_text.setFillColor(sf::Color::White);
+    } else if (selected_option == 2) {
+      resume_text.setFillColor(sf::Color::White);
+      about_text.setFillColor(sf::Color::White);
+      main_menu_text.setFillColor(
+          sf::Color(194, 0, 194));  // Resaltar opción seleccionada
     }
 
-    window->draw(resume_text);  // Render the resume text
-    window->draw(about_text);   // Render the about text
+    window->draw(resume_text);     // Render the resume text
+    window->draw(about_text);      // Render the about text
+    window->draw(main_menu_text);  // Render the main menu text
   }
 
   // Display the newly rendered frame onto the window.
   window->display();
 }
+
    
 
 bool Game::isRunning() const {
@@ -179,13 +193,13 @@ void Game::initPauseText() {
   pause_text.setFont(*Config::getInstance()->font);
   pause_text.setString("Paused");
   pause_text.setCharacterSize(50);
-  pause_text.setFillColor(sf::Color::White);
+  pause_text.setFillColor(sf::Color(194, 0, 194));
   pause_text.setPosition(
       window->getSize().x / 2 - pause_text.getGlobalBounds().width / 2,
       window->getSize().y / 2 - pause_text.getGlobalBounds().height / 2);
 
   resume_text.setFont(*Config::getInstance()->font);
-  resume_text.setString("Press R to Resume");
+  resume_text.setString("Resume");
   resume_text.setCharacterSize(30);
   resume_text.setFillColor(sf::Color::White);
   resume_text.setPosition(
@@ -200,9 +214,18 @@ void Game::initPauseText() {
       window->getSize().x / 2 - about_text.getGlobalBounds().width / 2,
       (window->getSize().y / 2 + pause_text.getGlobalBounds().height) + 45);
 
+  
+  main_menu_text.setFont(*Config::getInstance()->font);
+  main_menu_text.setString("Exit");
+  main_menu_text.setCharacterSize(30);
+  main_menu_text.setFillColor(sf::Color::White);
+  main_menu_text.setPosition(
+      window->getSize().x / 2 - main_menu_text.getGlobalBounds().width / 2,
+      (window->getSize().y / 2 + pause_text.getGlobalBounds().height) + 90);
+
   // Inicializar el rectángulo de opacidad
   pause_overlay.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
-  pause_overlay.setFillColor(sf::Color(0, 0, 0, 200));  // Color negro con 150 de opacidad
+  pause_overlay.setFillColor(sf::Color(0, 0, 0, 220));  // Color negro con 150 de opacidad
 }
 
 vector<vector<char>> Game::readMap() {

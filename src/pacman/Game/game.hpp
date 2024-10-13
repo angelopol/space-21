@@ -3,7 +3,6 @@
 
 #include <fstream>
 
-#include "../Config/config.hpp"
 #include "../GameTile/__barrel__.hpp"
 #include "../WindowTitle/window_title.hpp"
 #include "../../ResourcePath.hpp"
@@ -23,6 +22,7 @@ class Game {
   sf::Text pause_text;
   sf::Text resume_text;
   sf::Text about_text;
+  sf::Text main_menu_text;
   sf::RectangleShape pause_overlay;  // Nuevo rectángulo para opacidad
   vec3pGT map;
   WindowTitle *title, *game_over_title;
@@ -52,9 +52,6 @@ class Game {
   void initTitles();
   void initSounds();
   void initPauseText();
-  void restartGame();
-  void highlightResumeText();
-  void highlightAboutText();
 };  // class Game
 
 #endif  // GAME_HPP
