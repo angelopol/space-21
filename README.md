@@ -44,22 +44,22 @@ Inspired by Pacman, SPACE-21 is written in C++ using SFML, with local multiplaye
 | :------------------------------: | :------------------------------: | :--------------------------: | :------------------------: |
 | ![Pacman1](res/gifs/pacman1.gif) | ![Pacman2](res/gifs/pacman2.gif) | ![Pinky](res/gifs/pinky.gif) | ![Inky](res/gifs/inky.gif) |
 
-### Pacman
+### Bob / N-011
 
 Bob is the only player-controllable character in the game. He is the star of this show, and his goal is to eat all of the pellets inside the maze, all while avoiding being caught by the robots.
 
 #### Gaining points
 
-You may notice, however, that there are multiple types of "edible" tiles in the maze, such as regular pellets, which we'll call food, power pellets and fruit. Each kind of edible item has a different number of points associated to it, but not all are equally important. The game requires that pacman eats all FOOD tiles, meaning that Power Pellets and Fruits can very well remain uneaten and the game will still end if there are no more food tiles left.
+You may notice, however, that there are multiple types of "edible" tiles in the maze, such as regular pellets, which we'll call food, power pellets and vegetable. Each kind of edible item has a different number of points associated to it, but not all are equally important. The game requires that Bob eats all FOOD tiles, meaning that Power Pellets and Fruits can very well remain uneaten and the game will still end if there are no more food tiles left.
 
 | Icon                              | Tile Name        | Effect                                      |
 | :-------------------------------- | :--------------- | :------------------------------------------ |
-| ![food](res/gifs/food.gif)        | Food             | Grants Pacman +5 extra points               |
-| ![pellet](res/gifs/pellet.gif)    | Power Pellet     | Grants Pacman the ability to "eat" ghosts\* |
-| ![fruits](res/gifs/fruit.gif)     | Fruit            | Grants Pacman +100 extra points             |
-| ![ghost](res/gifs/frightened.gif) | Frightened Robot | Grants Pacman +200 extra points             |
+| ![food](res/gifs/food.gif)        | Food             | Grants Bob +5 extra points               |
+| ![pellet](res/gifs/pellet.gif)    | Power Pellet     | Grants Bob the ability to "destroy" robots\* |
+| ![fruits](res/gifs/fruit.gif)     | Vegetable        | Grants Bob +100 extra points             |
+| ![ghost](res/gifs/frightened.gif) | Frightened Robot | Grants Bob +200 extra points             |
 
-> - after Bob eats a power pellet, all robots will enter their frightened state for a short period of time, causing them to become vulnerable. Only when in this state will Pacman be able to destroy the robots.
+> - after Bob eats a power pellet, all robots will enter their frightened state for a short period of time, causing them to become vulnerable. Only when in this state will Bob be able to destroy the robots.
 
 When Bob comes in contact with a robot, he will not lose a life, as the original game would make you think. Instead, he loses 200 points and enters a hurt state for a short period of time. This hurt state grants him full invincibility from the robot, with the downside that he can't eat any tiles either. This mode is there solely to give him an opportunity to run away and recover from a tough situation.
 
@@ -92,11 +92,11 @@ All robots are implement as a finite state machine that consists of 3 main state
 </td>
 </table>
 
-We'll leave chase mode for later, as that is actually the bit that differs amongst the ghosts, while the other 3 states are identical in terms of behaviour across the board.
+We'll leave chase mode for later, as that is actually the bit that differs amongst the robots, while the other 3 states are identical in terms of behaviour across the board.
 
 ##### Scatter State
 
-When in scatter state, all ghosts will hurry back to their "safe spot" on the map instead of chasing Pacman. Each ghost has a different spot on the map, but conceptually, they all do the same thing, which is, they try to get to that spot on the map.
+When in scatter state, all robots will hurry back to their "safe spot" on the map instead of chasing Bob. Each robot has a different spot on the map, but conceptually, they all do the same thing, which is, they try to get to that spot on the map.
 
 |                                |  Robots  | Scatter point                  |
 | :----------------------------- | :------- | :----------------------------- |
@@ -113,15 +113,15 @@ The way the next tile to move into is decided is by calculating the distance fro
 
 ###### Possible transitions
 
-The only way a robot can enter scatter mode is if the ghost was previously in chase mode, and the chase mode timer reached 0 (i.e. after the amount of time alloted to being in chase mode has ran out).
+The only way a robot can enter scatter mode is if the robot was previously in chase mode, and the chase mode timer reached 0 (i.e. after the amount of time alloted to being in chase mode has ran out).
 
-From this state, the ghost can either go back into chase mode when the scatter timer reaches 0 (i.e. after the amount of time alloted to being in scatter mode has ran out) or go into frightened mode when pacman eats a power pellet.
+From this state, the robot can either go back into chase mode when the scatter timer reaches 0 (i.e. after the amount of time alloted to being in scatter mode has ran out) or go into frightened mode when Bob eats a power pellet.
 
 ##### Frightened State
 
 When in the frightened state, all robots enter an identical behaviour of pseudo-random movement and change their appearance into alteranting blue and white colors.
 
-> In this state, the robot speed gets halved, giving pacman an advantage in catching them.
+> In this state, the robot speed gets halved, giving Bob an advantage in catching them.
 
 ###### Movement decision
 
@@ -131,31 +131,31 @@ The next tile decision is now purely random (from the pool of available options\
 
 ###### Possible transitions
 
-There are 2 ways a ghost can get out of the fightened state. Either the frightened timer runs out, in which case the robot goes back into chase mode, or the ghost gets eaten, in which case it goes into the ... well ... eaten state.
+There are 2 ways a robot can get out of the fightened state. Either the frightened timer runs out, in which case the robot goes back into chase mode, or the robot gets eaten, in which case it goes into the ... well ... eaten state.
 
-The robots can only enter this state when pacman eats a power pellet.
+The robots can only enter this state when Bob eats a power pellet.
 
 ###### Movement decision
 
 The way the next tile to move into is decided is by calculating the distance linearly, just like scatter mode and then greedily picking the best one.
 
-In this state, the target tile is inside the ghost house.
+In this state, the target tile is inside the robot house.
 
 > Note: Robots can not turn around 180 degrees, so the only available tiles which are taken into account are the ones directly in front, to the right and the one to the left.
 
 ###### Possible transitions
 
-The only way out of the eaten state is for the ghost to reach the robot house and get respawned. At that point, the ghost goes back to chase mode.
+The only way out of the eaten state is for the robot to reach the robot house and get respawned. At that point, the robot goes back to chase mode.
 
-The only way a robot can get into the eaten state is by coming in contact with pacman while it is in the frightened state.
+The only way a robot can get into the eaten state is by coming in contact with Bob while it is in the frightened state.
 
 ##### Chase State
 
-When in chase state, all ghosts will target a specific tile in the maze, based on players position, and chase it. Each ghost has a different way of getting that tile, but conceptually, they all do the same thing, which is, they try to get to that spot on the map.
+When in chase state, all robots will target a specific tile in the maze, based on players position, and chase it. Each robot has a different way of getting that tile, but conceptually, they all do the same thing, which is, they try to get to that spot on the map.
 
 ###### Robot-1 Chase Target
 
-Robot-1 will always chase down pacman directly. His target tile is the tile that pacman is currently sitting on.
+Robot-1 will always chase down pacBobman directly. His target tile is the tile that Bob is currently sitting on.
 
 ###### Robot-2 Chase Target
 
@@ -167,4 +167,4 @@ While this tile choosing algorithm seems kind of random, it actually works out q
 
 A robot can enter the chase state if it was previously in scatter state and the scatter timer reached 0, if it was previously in frightened mode and the frightened timer reached 0 or if it was in the eaten state and it reached the robot house and has respawned.
 
-A robot can get out of chase state when the chase timer runs out, in which case it goes into scatter mode, or when Pacman eats a power pellet, in which case the robot will get into frightened mode.
+A robot can get out of chase state when the chase timer runs out, in which case it goes into scatter mode, or when Bob eats a power pellet, in which case the robot will get into frightened mode.
